@@ -3,6 +3,7 @@ import { db } from "@/lib/store";
 import { getUserFromCookie } from "@/lib/auth";
 import { getNativeBalance } from "@/lib/web3";
 import { Card, Stat, Badge, ButtonLink } from "@/components/ui";
+import { PriceTicker } from "@/components/price-ticker";
 import { formatMoney, formatDate, shortAddress } from "@/lib/format";
 
 export default async function OverviewPage() {
@@ -127,6 +128,7 @@ export default async function OverviewPage() {
             </p>
           )}
         </Card>
+        <PriceTicker />
       </div>
     </div>
   );

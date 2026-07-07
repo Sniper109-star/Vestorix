@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui";
+import { OnrampWidget } from "@/components/onramp-widget";
+import { SupportedNetworks } from "@/components/chain-selector";
 
 export default function DepositPage() {
   const router = useRouter();
@@ -48,6 +50,11 @@ export default function DepositPage() {
   return (
     <div className="mx-auto max-w-xl space-y-6">
       <h1 className="text-2xl font-bold">Deposit funds</h1>
+      <OnrampWidget />
+      <div className="space-y-2">
+        <p className="mb-2 text-sm text-white/50">Supported networks</p>
+        <SupportedNetworks />
+      </div>
       <Card>
         <form onSubmit={submit} className="space-y-4">
           <div className="grid grid-cols-3 gap-3">

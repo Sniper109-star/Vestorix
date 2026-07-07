@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getUserFromCookie } from "@/lib/auth";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { WalletConnectButton } from "@/components/wallet-connect";
 
 export default async function DashboardLayout({
   children,
@@ -19,11 +20,14 @@ export default async function DashboardLayout({
             <p className="text-sm text-white/50">Welcome back,</p>
             <p className="font-semibold">{user.name}</p>
           </div>
-          <div className="text-right">
-            <p className="text-xs text-white/40">Balance</p>
-            <p className="font-semibold text-emerald-300">
-              ${user.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            </p>
+          <div className="flex items-center gap-6">
+            <WalletConnectButton />
+            <div className="text-right">
+              <p className="text-xs text-white/40">Balance</p>
+              <p className="font-semibold text-emerald-300">
+                ${user.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </p>
+            </div>
           </div>
         </header>
         <main className="flex-1 p-6">{children}</main>
