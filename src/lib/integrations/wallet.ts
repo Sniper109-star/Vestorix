@@ -57,7 +57,7 @@ export function listenEip6963(
       uuid: detail.info.uuid,
       name: detail.info.name,
       icon: detail.info.icon,
-      provider: detail.info.provider,
+      provider: detail.provider,
     };
     found.set(wallet.uuid, wallet);
     onAnnounce(Array.from(found.values()));

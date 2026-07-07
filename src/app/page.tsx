@@ -39,9 +39,6 @@ export default function Home() {
       </nav>
 
       <section className="mt-20 text-center">
-        <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-emerald-300">
-          Powered by web3.js · Resend · Convex-style backend
-        </span>
         <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
           Invest on-chain with a dashboard you can trust
         </h1>
