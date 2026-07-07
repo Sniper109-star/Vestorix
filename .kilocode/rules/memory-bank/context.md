@@ -1,10 +1,13 @@
-# Active Context: Next.js Starter Template
+# Active Context: Apex Invest — Web3 Investment Platform
 
 ## Current State
 
-**Template Status**: ✅ Ready for development
+**Status**: ✅ Full-stack investment platform built on the Next.js 16 starter.
 
-The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. It's ready for AI-assisted expansion to build any type of application.
+The app is a web3 investment platform: users register, link an EVM wallet, view
+balances (on-chain via web3.js + in-app USD balance), deposit (with tx hash) and
+request withdrawals. An unlinked, admin-only console at `/admin` reviews and
+approves/rejects transactions. Emails via Resend.
 
 ## Recently Completed
 
@@ -14,6 +17,10 @@ The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. I
 - [x] ESLint configuration
 - [x] Memory bank documentation
 - [x] Recipe system for common features
+- [x] Admin console rebuilt with **react-admin** (marmelab/react-admin):
+  custom DataProvider -> existing /api/admin/* routes, dashboard stats,
+  UserList + TransactionList with approve/reject. Loaded client-only via
+  next/dynamic (ssr:false).
 
 ## Current Structure
 
@@ -85,3 +92,5 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
+| 2026-07-07 | Built full web3 investment platform: auth, user dashboard (overview/deposit/withdraw/profile/transactions), hidden /admin console, web3.js balances, Resend emails, JSON store + seed script |
+| 2026-07-07 | Rebuilt /admin console with react-admin (custom DataProvider over /api/admin/*, dashboard, UserList, TransactionList approve/reject) |
