@@ -36,6 +36,11 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "convex/schema.ts",
+    "convex/users.ts",
+    "convex/sessions.ts",
+    "convex/transactions.ts",
+    "convex/plans.ts"
   ]
 }

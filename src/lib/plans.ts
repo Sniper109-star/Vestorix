@@ -5,6 +5,7 @@ export interface InvestmentPlan {
   min: number;
   max: number | null;
   roi: number | null;
+  icon: string;
   assets?: string[];
   highlight?: boolean;
 }
@@ -13,35 +14,40 @@ export const INVESTMENT_PLANS: InvestmentPlan[] = [
   {
     id: "startup",
     name: "Startup",
-    tagline: "Entry-level plan for new investors getting started.",
+    tagline: "Grow wealth and profits using crypto (Solana).",
     min: 65,
     max: 200,
     roi: 4.5,
+    icon: "solana",
   },
   {
     id: "professional",
     name: "Professional",
-    tagline: "Balanced growth for more committed investors.",
+    tagline: "Grow wealth and profits using Agriculture.",
     min: 300,
     max: 1000,
     roi: 6.6,
+    icon: "plant",
   },
   {
     id: "premium",
     name: "Premium",
-    tagline: "High-yield plan with maximum returns.",
+    tagline: "Grow wealth and profits using Real Estate investment.",
     min: 2000,
     max: 5000,
     roi: 10.5,
+    icon: "building",
   },
   {
     id: "unlimited",
     name: "Unlimited",
-    tagline: "Unlimited crypto strategy across trending assets.",
+    tagline:
+      "Grow wealth and profits using Car stock, Altcoin, BONK, XRP, Meme.",
     min: 1000,
     max: null,
     roi: null,
-    assets: ["Meme", "Altcoin", "XRP", "BONK", "Solana"],
+    icon: "trending",
+    assets: ["Car stock", "Altcoin", "BONK", "XRP", "Meme"],
     highlight: true,
   },
 ];

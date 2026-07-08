@@ -77,6 +77,7 @@
   .badge { position: absolute; top: 16px; right: 16px; font-size: 11px; font-weight: 700; color: #04150f; background: var(--emerald); padding: 3px 9px; border-radius: 999px; }
   .plan h3 { font-size: 20px; font-weight: 700; }
   .plan .tag { color: var(--muted); font-size: 13px; margin-top: 6px; min-height: 38px; }
+  .plan-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--emerald-soft); color: var(--emerald); margin-bottom: 4px; }
   .roi { font-size: 36px; font-weight: 800; color: var(--emerald); margin: 16px 0 2px; }
   .roi small { font-size: 14px; color: var(--muted); font-weight: 500; }
   .range { font-size: 14px; color: var(--muted); }
@@ -212,12 +213,24 @@
 <script>
   // ---- Plan data (the process) ----
   const PLANS = [
-    { id:"startup", name:"Startup", tag:"Entry-level plan for new investors getting started.", min:65, max:200, roi:4.5 },
-    { id:"professional", name:"Professional", tag:"Balanced growth for more committed investors.", min:300, max:1000, roi:6.6 },
-    { id:"premium", name:"Premium", tag:"High-yield plan with maximum returns.", min:2000, max:5000, roi:10.5 },
-    { id:"unlimited", name:"Unlimited", tag:"Unlimited crypto strategy across trending assets.", min:1000, max:null, roi:null,
-      assets:["Meme","Altcoin","XRP","BONK","Solana"], popular:true }
+    { id:"startup", name:"Startup", tag:"Grow wealth and profits using crypto (Solana).", min:65, max:200, roi:4.5, icon:"solana" },
+    { id:"professional", name:"Professional", tag:"Grow wealth and profits using Agriculture.", min:300, max:1000, roi:6.6, icon:"plant" },
+    { id:"premium", name:"Premium", tag:"Grow wealth and profits using Real Estate investment.", min:2000, max:5000, roi:10.5, icon:"building" },
+    { id:"unlimited", name:"Unlimited", tag:"Grow wealth and profits using Car stock, Altcoin, BONK, XRP, Meme.", min:1000, max:null, roi:null,
+      assets:["Car stock","Altcoin","BONK","XRP","Meme"], popular:true, icon:"trending" }
   ];
+
+  // Tabler-style icons (https://github.com/tabler/tabler)
+  const ICON_PATHS = {
+    solana: '<circle cx="12" cy="12" r="9"/><path d="M14.5 9.2c-.6-1.4-1.9-2.2-3.5-2.2S7.6 7.8 7 9.2c-.5 1.3.2 2.2 1.4 2.6-.9.5-1.4 1.3-1.2 2.3.4 1.3 1.7 2 3.3 2 1.6 0 2.9-.6 3.4-2 .5-1.2-.2-2.1-1.4-2.6.9-.5 1.4-1.3 1.2-2.3z"/>',
+    plant: '<path d="M12 22V8"/><path d="M12 8C9 8 7 6 7 3c3 0 5 2 5 5z"/><path d="M12 11c3 0 5-2 5-5-3 0-5 2-5 5z"/>',
+    building: '<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/>',
+    trending: '<path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/>'
+  };
+  function iconSvg(name) {
+    const paths = ICON_PATHS[name] || ICON_PATHS.trending;
+    return `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+  }
 
   const STORE_KEY = "vestorix_investments";
   let investments = load();
@@ -243,6 +256,7 @@
       card.className = "plan" + (p.popular ? " popular" : "");
       card.innerHTML = `
         ${p.popular ? '<span class="badge">Popular</span>' : ""}
+        <div class="plan-icon">${iconSvg(p.icon)}</div>
         <h3>${p.name}</h3>
         <div class="tag">${p.tag}</div>
         <div class="roi">${roiText}</div>
@@ -379,6 +393,19 @@
   // ---- Init ----
   renderPlans();
   renderPortfolio();
+
+  // ---- Tawk.to live chat (set TAWK_ID to enable) ----
+  (function () {
+    var TAWK_ID = ""; // e.g. "64b...your-property-id"
+    if (!TAWK_ID) return;
+    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+    var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+    s1.async = true;
+    s1.src = "https://embed.tawk.to/" + TAWK_ID + "/default";
+    s1.charset = "UTF-8";
+    s1.setAttribute("crossorigin", "*");
+    s0.parentNode.insertBefore(s1, s0);
+  })();
 </script>
 </body>
 </html>

@@ -1,96 +1,157 @@
-import { promises as fs } from "fs";
-import path from "path";
+import { getConvex } from "./convexServer";
 import type { Session, Transaction, User } from "./types";
+import { api } from "../../convex/_generated/api";
 
-interface DBShape {
-  users: User[];
-  sessions: Session[];
-  transactions: Transaction[];
+interface ConvexUserDoc {
+  _id: string;
+  email: string;
+  name: string;
+  passwordHash: string;
+  role: "user" | "admin";
+  walletAddress: string | null;
+  balance: number;
+  createdAt: string;
 }
 
-const DATA_DIR = path.join(process.cwd(), ".data");
-const DB_FILE = path.join(DATA_DIR, "db.json");
-
-const EMPTY: DBShape = { users: [], sessions: [], transactions: [] };
-
-async function readDB(): Promise<DBShape> {
-  try {
-    const raw = await fs.readFile(DB_FILE, "utf8");
-    const parsed = JSON.parse(raw) as Partial<DBShape>;
-    return {
-      users: parsed.users ?? [],
-      sessions: parsed.sessions ?? [],
-      transactions: parsed.transactions ?? [],
-    };
-  } catch {
-    return { ...EMPTY };
-  }
+interface ConvexSessionDoc {
+  _id: string;
+  token: string;
+  userId: string;
+  expiresAt: number;
 }
 
-async function writeDB(db: DBShape): Promise<void> {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.writeFile(DB_FILE, JSON.stringify(db, null, 2), "utf8");
+interface ConvexTxDoc {
+  _id: string;
+  userId: string;
+  type: "deposit" | "withdrawal";
+  amount: number;
+  asset: string;
+  status: "pending" | "approved" | "rejected";
+  txHash: string | null;
+  address: string | null;
+  note: string | null;
+  createdAt: string;
+  processedAt: string | null;
+  processedBy: string | null;
 }
 
-async function mutate<T>(fn: (db: DBShape) => T): Promise<T> {
-  const db = await readDB();
-  const result = fn(db);
-  await writeDB(db);
-  return result;
+function mapUser(d: ConvexUserDoc): User {
+  return {
+    id: d._id,
+    email: d.email,
+    name: d.name,
+    passwordHash: d.passwordHash,
+    role: d.role,
+    walletAddress: d.walletAddress,
+    balance: d.balance,
+    createdAt: d.createdAt,
+  };
+}
+
+function mapSession(d: ConvexSessionDoc): Session {
+  return { token: d.token, userId: d.userId, expiresAt: d.expiresAt };
+}
+
+function mapTx(d: ConvexTxDoc): Transaction {
+  return {
+    id: d._id,
+    userId: d.userId,
+    type: d.type,
+    amount: d.amount,
+    asset: d.asset,
+    status: d.status,
+    txHash: d.txHash,
+    address: d.address,
+    note: d.note,
+    createdAt: d.createdAt,
+    processedAt: d.processedAt,
+    processedBy: d.processedBy,
+  };
 }
 
 export const db = {
   // --- Users ---
-  getUsers: () => readDB().then((d) => d.users),
-  getUserById: (id: string) =>
-    readDB().then((d) => d.users.find((u) => u.id === id) ?? null),
-  getUserByEmail: (email: string) =>
-    readDB().then((d) => d.users.find((u) => u.email === email) ?? null),
-  createUser: (user: User) =>
-    mutate((d) => {
-      d.users.push(user);
-      return user;
-    }),
-  updateUser: (id: string, patch: Partial<User>) =>
-    mutate((d) => {
-      const u = d.users.find((x) => x.id === id);
-      if (!u) return null;
-      Object.assign(u, patch);
-      return u;
-    }),
+  getUsers: async (): Promise<User[]> =>
+    (await getConvex().query(api.users.list, {})).map(mapUser),
+  getUserById: async (id: string): Promise<User | null> => {
+    const d = await getConvex().query(api.users.getById, { id });
+    return d ? mapUser(d as ConvexUserDoc) : null;
+  },
+  getUserByEmail: async (email: string): Promise<User | null> => {
+    const d = await getConvex().query(api.users.getByEmail, { email });
+    return d ? mapUser(d as ConvexUserDoc) : null;
+  },
+  createUser: async (user: User): Promise<User> => {
+    const id = await getConvex().mutation(api.users.create, {
+      email: user.email,
+      name: user.name,
+      passwordHash: user.passwordHash,
+      role: user.role,
+      walletAddress: user.walletAddress,
+      balance: user.balance,
+      createdAt: user.createdAt,
+    });
+    const d = await getConvex().query(api.users.getById, { id });
+    return mapUser(d as ConvexUserDoc);
+  },
+  updateUser: async (id: string, patch: Partial<User>): Promise<User | null> => {
+    const d = await getConvex().mutation(api.users.update, { id, patch });
+    return d ? mapUser(d as ConvexUserDoc) : null;
+  },
 
   // --- Sessions ---
-  getSession: (token: string) =>
-    readDB().then((d) => d.sessions.find((s) => s.token === token) ?? null),
-  createSession: (session: Session) =>
-    mutate((d) => {
-      d.sessions.push(session);
-      return session;
-    }),
-  deleteSession: (token: string) =>
-    mutate((d) => {
-      d.sessions = d.sessions.filter((s) => s.token !== token);
-      return true;
-    }),
+  getSession: async (token: string): Promise<Session | null> => {
+    const d = await getConvex().query(api.sessions.get, { token });
+    return d ? mapSession(d as ConvexSessionDoc) : null;
+  },
+  createSession: async (session: Session): Promise<Session> => {
+    await getConvex().mutation(api.sessions.create, {
+      token: session.token,
+      userId: session.userId,
+      expiresAt: session.expiresAt,
+    });
+    return session;
+  },
+  deleteSession: async (token: string): Promise<boolean> => {
+    await getConvex().mutation(api.sessions.remove, { token });
+    return true;
+  },
 
   // --- Transactions ---
-  getTransactions: () => readDB().then((d) => d.transactions),
-  getUserTransactions: (userId: string) =>
-    readDB().then((d) =>
-      d.transactions.filter((t) => t.userId === userId),
+  getTransactions: async (): Promise<Transaction[]> =>
+    (await getConvex().query(api.transactions.list, {})).map(
+      (d: any) => mapTx(d as ConvexTxDoc),
     ),
-  getTransactionById: (id: string) =>
-    readDB().then((d) => d.transactions.find((t) => t.id === id) ?? null),
-  createTransaction: (tx: Transaction) =>
-    mutate((d) => {
-      d.transactions.push(tx);
-      return tx;
-    }),
-  updateTransaction: (id: string, patch: Partial<Transaction>) =>
-    mutate((d) => {
-      const t = d.transactions.find((x) => x.id === id);
-      if (!t) return null;
-      Object.assign(t, patch);
-      return t;
-    }),
+  getUserTransactions: async (userId: string): Promise<Transaction[]> =>
+    (await getConvex().query(api.transactions.listUser, { userId })).map(
+      (d: any) => mapTx(d as ConvexTxDoc),
+    ),
+  getTransactionById: async (id: string): Promise<Transaction | null> => {
+    const d = await getConvex().query(api.transactions.get, { id });
+    return d ? mapTx(d as ConvexTxDoc) : null;
+  },
+  createTransaction: async (tx: Transaction): Promise<Transaction> => {
+    const id = await getConvex().mutation(api.transactions.create, {
+      userId: tx.userId,
+      type: tx.type,
+      amount: tx.amount,
+      asset: tx.asset,
+      status: tx.status,
+      txHash: tx.txHash,
+      address: tx.address,
+      note: tx.note,
+      createdAt: tx.createdAt,
+      processedAt: tx.processedAt,
+      processedBy: tx.processedBy,
+    });
+    const d = await getConvex().query(api.transactions.get, { id });
+    return mapTx(d as ConvexTxDoc);
+  },
+  updateTransaction: async (
+    id: string,
+    patch: Partial<Transaction>,
+  ): Promise<Transaction | null> => {
+    const d = await getConvex().mutation(api.transactions.update, { id, patch });
+    return d ? mapTx(d as ConvexTxDoc) : null;
+  },
 };
