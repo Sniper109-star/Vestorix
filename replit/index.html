@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vestorix — Crypto Investment Platform</title>
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --panel: #141417;
+    --panel-2: #1b1b1f;
+    --border: #2a2a30;
+    --text: #f5f5f7;
+    --muted: #9a9aa5;
+    --emerald: #10b981;
+    --emerald-soft: rgba(16, 185, 129, 0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: radial-gradient(1200px 600px at 70% -10%, #102018 0%, var(--bg) 55%);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 20;
+    backdrop-filter: blur(10px);
+    background: rgba(10,10,11,0.7);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+  .logo {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: grid; place-items: center;
+    background: var(--emerald); color: #04150f; font-weight: 800;
+  }
+  .nav-actions { display: flex; align-items: center; gap: 10px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 9px 16px; border-radius: 10px; font-size: 14px; font-weight: 600;
+    cursor: pointer; border: 1px solid transparent; transition: .15s;
+  }
+  .btn-primary { background: var(--emerald); color: #04150f; }
+  .btn-primary:hover { background: #0ea271; }
+  .btn-ghost { border-color: var(--border); color: var(--text); background: transparent; }
+  .btn-ghost:hover { background: var(--panel-2); }
+  .btn-block { width: 100%; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 90px 0 50px; }
+  .hero h1 { font-size: clamp(32px, 6vw, 56px); line-height: 1.05; font-weight: 800; letter-spacing: -1px; }
+  .hero p { color: var(--muted); max-width: 620px; margin: 18px auto 0; font-size: 17px; }
+  .hero-cta { margin-top: 28px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .pill { display: inline-block; padding: 6px 14px; border: 1px solid var(--border); border-radius: 999px; font-size: 13px; color: var(--muted); }
+
+  /* Section */
+  section.block { padding: 60px 0; }
+  .section-head { text-align: center; margin-bottom: 36px; }
+  .section-head h2 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; }
+  .section-head p { color: var(--muted); margin-top: 10px; }
+
+  /* Plans */
+  .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .plan {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 18px;
+    padding: 22px; display: flex; flex-direction: column; position: relative; transition: .2s;
+  }
+  .plan:hover { transform: translateY(-4px); border-color: #3a3a42; }
+  .plan.popular { border-color: rgba(16,185,129,.45); background: linear-gradient(180deg, var(--emerald-soft), var(--panel) 40%); }
+  .badge { position: absolute; top: 16px; right: 16px; font-size: 11px; font-weight: 700; color: #04150f; background: var(--emerald); padding: 3px 9px; border-radius: 999px; }
+  .plan h3 { font-size: 20px; font-weight: 700; }
+  .plan .tag { color: var(--muted); font-size: 13px; margin-top: 6px; min-height: 38px; }
+  .roi { font-size: 36px; font-weight: 800; color: var(--emerald); margin: 16px 0 2px; }
+  .roi small { font-size: 14px; color: var(--muted); font-weight: 500; }
+  .range { font-size: 14px; color: var(--muted); }
+  .assets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .assets span { font-size: 11px; border: 1px solid var(--border); padding: 3px 8px; border-radius: 999px; color: var(--text); }
+  .plan .btn { margin-top: auto; }
+
+  /* Portfolio */
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 22px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 14px; margin-bottom: 18px; }
+  .stat { background: var(--panel-2); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+  .stat .k { font-size: 12px; color: var(--muted); }
+  .stat .v { font-size: 24px; font-weight: 800; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 14px; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .empty { color: var(--muted); text-align: center; padding: 30px 0; }
+  .pos { color: var(--emerald); font-weight: 700; }
+
+  /* Modal */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); display: none; align-items: center; justify-content: center; z-index: 50; padding: 20px; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 24px; width: 100%; max-width: 420px; }
+  .modal h3 { font-size: 20px; font-weight: 700; }
+  .modal .sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .field { margin-top: 18px; }
+  .field label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 6px; }
+  .field input {
+    width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--panel-2); color: var(--text); font-size: 15px; outline: none;
+  }
+  .field input:focus { border-color: var(--emerald); }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .calc { margin-top: 16px; padding: 14px; border-radius: 12px; background: var(--panel-2); border: 1px solid var(--border); font-size: 14px; }
+  .calc .row { display: flex; justify-content: space-between; padding: 3px 0; }
+  .calc .row.total { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; font-weight: 700; }
+  .err { color: #f87171; font-size: 13px; margin-top: 8px; min-height: 18px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .close-x { float: right; cursor: pointer; color: var(--muted); font-size: 20px; line-height: 1; }
+
+  /* Toast */
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--emerald); color: #04150f; padding: 12px 20px; border-radius: 12px; font-weight: 600; opacity: 0; transition: .25s; z-index: 60; pointer-events: none; }
+  #toast.show { opacity: 1; }
+
+  footer { border-top: 1px solid var(--border); padding: 30px 0; text-align: center; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="logo">◆</span> Vestorix</div>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" id="connectBtn">Connect Wallet</button>
+      <a class="btn btn-primary" href="#plans">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero wrap">
+  <span class="pill">Crypto investment plans · up to 10.5% returns</span>
+  <h1>Grow your crypto with<br/>smart investment plans</h1>
+  <p>Pick a plan, fund your account, and let Vestorix put your assets to work. From a $65 Startup plan to unlimited meme &amp; altcoin strategies.</p>
+  <div class="hero-cta">
+    <a class="btn btn-primary" href="#plans">View Plans</a>
+    <a class="btn btn-ghost" href="#portfolio" id="trackBtn">Track Investment</a>
+  </div>
+</header>
+
+<section class="block wrap" id="plans">
+  <div class="section-head">
+    <h2>Investment Plans</h2>
+    <p>Choose the plan that fits your capital and goals.</p>
+  </div>
+  <div class="grid" id="plansGrid"></div>
+</section>
+
+<section class="block wrap" id="portfolio">
+  <div class="section-head">
+    <h2>My Investments</h2>
+    <p>Your active plans (saved locally in this browser).</p>
+  </div>
+  <div class="panel">
+    <div class="stats">
+      <div class="stat"><div class="k">Total Invested</div><div class="v" id="totalInvested">$0</div></div>
+      <div class="stat"><div class="k">Expected Returns</div><div class="v pos" id="totalReturns">$0</div></div>
+      <div class="stat"><div class="k">Active Plans</div><div class="v" id="activeCount">0</div></div>
+    </div>
+    <div id="tableWrap">
+      <table>
+        <thead><tr><th>Plan</th><th>Amount</th><th>Return</th><th>Expected</th><th>Date</th></tr></thead>
+        <tbody id="investTable"></tbody>
+      </table>
+      <div class="empty" id="emptyState">No investments yet — pick a plan above to get started.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Vestorix · Demo MVP. Not financial advice. Crypto investments carry risk.
+</footer>
+
+<!-- Investment modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <span class="close-x" id="closeModal">×</span>
+    <h3 id="modalTitle">Invest</h3>
+    <div class="sub" id="modalSub"></div>
+
+    <div class="field">
+      <label for="amount">Investment amount (USD)</label>
+      <input id="amount" type="number" placeholder="0.00" min="0" step="any" />
+      <div class="hint" id="rangeHint"></div>
+    </div>
+
+    <div class="calc" id="calc" style="display:none">
+      <div class="row"><span>Principal</span><span id="cPrincipal">$0</span></div>
+      <div class="row"><span>Return (<span id="cRate">0</span>%)</span><span id="cReturn" class="pos">$0</span></div>
+      <div class="row total"><span>Expected payout</span><span id="cTotal">$0</span></div>
+    </div>
+
+    <div class="err" id="err"></div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="cancelBtn">Cancel</button>
+      <button class="btn btn-primary btn-block" id="confirmBtn">Confirm Investment</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // ---- Plan data (the process) ----
+  const PLANS = [
+    { id:"startup", name:"Startup", tag:"Entry-level plan for new investors getting started.", min:65, max:200, roi:4.5 },
+    { id:"professional", name:"Professional", tag:"Balanced growth for more committed investors.", min:300, max:1000, roi:6.6 },
+    { id:"premium", name:"Premium", tag:"High-yield plan with maximum returns.", min:2000, max:5000, roi:10.5 },
+    { id:"unlimited", name:"Unlimited", tag:"Unlimited crypto strategy across trending assets.", min:1000, max:null, roi:null,
+      assets:["Meme","Altcoin","XRP","BONK","Solana"], popular:true }
+  ];
+
+  const STORE_KEY = "vestorix_investments";
+  let investments = load();
+  let activePlan = null;
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+    catch { return []; }
+  }
+  function save() { localStorage.setItem(STORE_KEY, JSON.stringify(investments)); }
+
+  function money(n) { return "$" + Number(n).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}); }
+  function fmtRange(p) { return money(p.min) + " – " + (p.max === null ? "Unlimited" : money(p.max)); }
+
+  // ---- Render plans ----
+  function renderPlans() {
+    const grid = document.getElementById("plansGrid");
+    grid.innerHTML = "";
+    PLANS.forEach(p => {
+      const roiText = p.roi === null ? "Variable" : p.roi + "%";
+      const assets = (p.assets || []).map(a => `<span>$${a}</span>`).join("");
+      const card = document.createElement("div");
+      card.className = "plan" + (p.popular ? " popular" : "");
+      card.innerHTML = `
+        ${p.popular ? '<span class="badge">Popular</span>' : ""}
+        <h3>${p.name}</h3>
+        <div class="tag">${p.tag}</div>
+        <div class="roi">${roiText}</div>
+        <div class="range">Range: ${fmtRange(p)}</div>
+        ${assets ? `<div class="assets">${assets}</div>` : ""}
+        <button class="btn ${p.popular ? "btn-primary" : "btn-ghost"} btn-block" style="margin-top:18px" data-plan="${p.id}">Invest in ${p.name}</button>
+      `;
+      grid.appendChild(card);
+    });
+    grid.querySelectorAll("button[data-plan]").forEach(b => {
+      b.addEventListener("click", () => openModal(b.getAttribute("data-plan")));
+    });
+  }
+
+  // ---- Modal ----
+  const overlay = document.getElementById("overlay");
+  const amountInput = document.getElementById("amount");
+
+  function openModal(id) {
+    activePlan = PLANS.find(p => p.id === id);
+    if (!activePlan) return;
+    document.getElementById("modalTitle").textContent = "Invest in " + activePlan.name;
+    document.getElementById("modalSub").textContent = activePlan.tag;
+    document.getElementById("rangeHint").textContent =
+      "Allowed range: " + fmtRange(activePlan) + (activePlan.roi === null ? " · Variable return" : ` · ${activePlan.roi}% return`);
+    document.getElementById("cRate").textContent = activePlan.roi === null ? "0" : activePlan.roi;
+    amountInput.value = "";
+    document.getElementById("err").textContent = "";
+    document.getElementById("calc").style.display = "none";
+    overlay.classList.add("open");
+    amountInput.focus();
+  }
+  function closeModal() { overlay.classList.remove("open"); activePlan = null; }
+
+  document.getElementById("closeModal").onclick = closeModal;
+  document.getElementById("cancelBtn").onclick = closeModal;
+  overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
+
+  function recalc() {
+    const amt = parseFloat(amountInput.value);
+    const calc = document.getElementById("calc");
+    if (!activePlan || !amt || amt <= 0) { calc.style.display = "none"; return; }
+    const roi = activePlan.roi === null ? 0 : activePlan.roi;
+    const ret = amt * roi / 100;
+    document.getElementById("cPrincipal").textContent = money(amt);
+    document.getElementById("cReturn").textContent = money(ret);
+    document.getElementById("cTotal").textContent = money(amt + ret);
+    calc.style.display = "block";
+  }
+  amountInput.addEventListener("input", recalc);
+
+  document.getElementById("confirmBtn").onclick = () => {
+    const err = document.getElementById("err");
+    err.textContent = "";
+    const amt = parseFloat(amountInput.value);
+    if (!activePlan) return;
+    if (!amt || amt <= 0) { err.textContent = "Enter an amount."; return; }
+    if (amt < activePlan.min) { err.textContent = "Minimum is " + money(activePlan.min) + "."; return; }
+    if (activePlan.max !== null && amt > activePlan.max) { err.textContent = "Maximum is " + money(activePlan.max) + "."; return; }
+
+    const roi = activePlan.roi === null ? 0 : activePlan.roi;
+    investments.push({
+      plan: activePlan.name,
+      amount: amt,
+      roi: roi,
+      expected: amt + amt * roi / 100,
+      date: new Date().toISOString().slice(0, 10)
+    });
+    save();
+    renderPortfolio();
+    closeModal();
+    showToast("Investment in " + activePlan.name + " added!");
+    document.getElementById("portfolio").scrollIntoView({behavior:"smooth"});
+  };
+
+  // ---- Portfolio ----
+  function renderPortfolio() {
+    const tbody = document.getElementById("investTable");
+    const empty = document.getElementById("emptyState");
+    tbody.innerHTML = "";
+    let total = 0, ret = 0;
+    if (investments.length === 0) {
+      empty.style.display = "block";
+    } else {
+      empty.style.display = "none";
+      investments.forEach(i => {
+        total += i.amount;
+        ret += (i.expected - i.amount);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${i.plan}</td>
+          <td>${money(i.amount)}</td>
+          <td>${i.roi === 0 ? "Variable" : i.roi + "%"}</td>
+          <td class="pos">${money(i.expected)}</td>
+          <td>${i.date}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    document.getElementById("totalInvested").textContent = money(total);
+    document.getElementById("totalReturns").textContent = money(ret);
+    document.getElementById("activeCount").textContent = investments.length;
+  }
+
+  // ---- Wallet (mock / injected) ----
+  document.getElementById("connectBtn").onclick = async () => {
+    if (window.ethereum) {
+      try {
+        const accts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        const short = accts[0].slice(0,6) + "…" + accts[0].slice(-4);
+        const btn = document.getElementById("connectBtn");
+        btn.textContent = short;
+        btn.classList.remove("btn-ghost"); btn.classList.add("btn-primary");
+        showToast("Wallet connected");
+      } catch { showToast("Connection rejected"); }
+    } else {
+      showToast("No browser wallet found");
+    }
+  };
+
+  // ---- Toast ----
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+  }
+
+  document.getElementById("trackBtn").onclick = () => {
+    if (investments.length === 0) showToast("Add an investment plan first");
+  };
+
+  // ---- Init ----
+  renderPlans();
+  renderPortfolio();
+</script>
+</body>
+</html>

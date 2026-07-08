@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ButtonLink, Card } from "@/components/ui";
+import { PlansSection } from "@/components/plans-section";
 
 const features = [
   {
@@ -62,6 +63,8 @@ export default function Home() {
           </Card>
         ))}
       </section>
+
+      <PlansSection />
 
       <footer className="mt-24 border-t border-white/10 pt-8 text-center text-xs text-white/40">
         Apex Invest · Demo platform. Not financial advice.
